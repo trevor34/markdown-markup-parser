@@ -1,0 +1,20 @@
+{
+  "name": "markdown-website-builder",
+  "version": "1.0.0",
+  "description": "Markdown website builder using NodeJs",
+  "main": "website-maker.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trevor34/markdown-website-builder.git"
+  },
+  "author": "Trevor W.",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/trevor34/markdown-website-builder/issues"
+  },
+  "homepage": "https://github.com/trevor34/markdown-website-builder",
+  "dependencies": {
+    "markdown-it": "^8.4.1",
+    "command-line-args": "^5.0.2"
+  }
+}

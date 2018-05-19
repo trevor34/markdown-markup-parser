@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file. The format 
 
 		Markdown Website builder - v0.1
 		Created by: Trevor W.
-		
+
 		Github: https://github.com/trevor34/markdown-website-builder/
-		
+
 ## Types of changes
     [Added] for new features.
     [Changed] for changes in existing functionality.
@@ -17,9 +17,13 @@ All notable changes to this project will be documented in this file. The format 
 
 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
-- Keep all markdown in one file
-- Make new files
+- Add commands for a CSS framework
+- Add support for the CSS 12 column layout, along with making divs
+- There is a small formatting problem for ordered and unordered lists, they aren't indented correctly in the HTML output. You can see an example of this in [index.html](examples/index.html). It would be good to get this fixed so that people looking at the HTML can read it better
 
+## [0.2] 2018-5-18
+### Added
+- Made base program, along with an example page
 ## [0.1] 2018-5-18
 ### Added
-Set up github page
+- Set up GitHub page
