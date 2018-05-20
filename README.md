@@ -1,4 +1,4 @@
-# markdown-website-builder
+# markdown-website-builder v0.3
 This is a website builder that uses NodeJS and [Markdown-it](https://github.com/markdown-it/markdown-it). It's main feature so far is that you can make multiple HTML pages in one Markdown file.
 
 
@@ -12,9 +12,9 @@ This is a website builder that uses NodeJS and [Markdown-it](https://github.com/
 1. Once you have a page you want, simply run `node website-maker.js` and the program will parse the markdown file into a html file
 
 ### Syntax:
-All commands are started with `/+` in the format `/+<command>`. Don't include the angle brackets when using commands
-- `start <page>`: Start new page
-- `end <page>`: End page
+All commands are started with `/!` in the format `/!<command>`. Don't include the angle brackets when using commands
+- `start page <page>`: Start new page
+- `end page <page>`: End page
 
 An example of the syntax in use can be found at [examples/index.md](examples/index.md).
 
