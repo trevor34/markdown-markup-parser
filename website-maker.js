@@ -63,9 +63,9 @@ if (options.init) {
   process.exit();
 }
 if (options.mdhelp) {
-  send = 'All commands are started with /! in the format /!<command>. Don\'t include the angle brackets when using commands\n';
-  send += '\tstart page <page>: Start new page\n';
-  send += '\tend page <page>: End page';
+  send = '\tAll commands are started with /! in the format /!<command>. Don\'t include the angle brackets when using commands\n';
+  send += '\t  start page <page>: Start new page\n';
+  send += '\t  end page <page>: End page';
   console.log(send);
   process.exit();
 }
