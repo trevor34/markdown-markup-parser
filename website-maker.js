@@ -12,7 +12,7 @@ const optionDefinitions = [
   { name: 'dest', alias: 'd', type: String },
   { name: 'tag', alias: 't', type: String },
   { name: 'init', type: Boolean },
-  { name: 'mdHelp', type: Boolean }
+  { name: 'mdhelp', type: Boolean }
 ];
 
 var i, p = 0;
@@ -24,7 +24,7 @@ if (options.help) {
   send += '\t--dest, -d: Specify where you want files to be made (default: current directory)\n';
   send += '\t--tag, -t: Specify command tags (default: /!)\n';
   send += '\t--init: make a new markdown file with starters\n';
-  send += '\t--mdHelp: Get help for markdown parsing commands (coming soon)\n';
+  send += '\t--mdhelp: Get help for markdown parsing commands\n';
   console.log(send);
   process.exit();
 }
@@ -60,6 +60,13 @@ if (options.init) {
       return console.log(err);
     }
   });
+  process.exit();
+}
+if (options.mdhelp) {
+  send = 'All commands are started with /! in the format /!<command>. Don\'t include the angle brackets when using commands\n';
+  send += '\tstart page <page>: Start new page\n';
+  send += '\tend page <page>: End page';
+  console.log(send);
   process.exit();
 }
 
