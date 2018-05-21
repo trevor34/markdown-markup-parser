@@ -16,6 +16,14 @@ All commands are started with `/!` in the format `/!<command>`. Don't include th
 - `start page <page>`: Start new page
 - `end page <page>`: End page
 
+### Command line flags
+- --help, -h: Display this message
+- --file, -f: Specify markdown file to read from (default: index.md in current directory)
+- --dest, -d: Specify where you want files to be made (default: current directory)
+- --tag, -t: Specify command tags (default: /!)
+- --init: make a new markdown file with starters
+- --mdhelp: Get help for markdown parsing commands
+
 An example of the syntax in use can be found at [examples/index.md](examples/index.md).
 
 Want to contribute? Check out the [Changelog file](CHANGELOG.md)
