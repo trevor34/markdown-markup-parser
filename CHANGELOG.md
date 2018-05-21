@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file. The format 
 - Add a command for information that goes into the head of an HTML document (name, stylesheet links, favicon, etc.)
 ## [0.4] 2018-5-21
 ## Added
-- Command for markdown parsing commands
+- Command line flag for markdown parsing help
 ## Fixed
 - Tabbing error
 ## [0.3] 2018-5-19
