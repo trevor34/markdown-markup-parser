@@ -15,7 +15,6 @@
   "homepage": "https://github.com/trevor34/markdown-website-builder",
   "dependencies": {
     "markdown-it": "^8.4.1",
-    "markdown-it-container": "^2.0.0",
     "command-line-args": "^5.0.2"
   }
 }
