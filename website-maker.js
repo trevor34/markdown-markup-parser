@@ -12,7 +12,7 @@ const optionDefinitions = [
   { name: 'dest', alias: 'd', type: String },
   { name: 'tag', alias: 't', type: String },
   { name: 'init', type: Boolean },
-  { name: 'mdhelp', type: Boolean }
+  { name: 'mdhelp', alias: 'm', type: Boolean }
 ];
 
 var i, p = 0;
