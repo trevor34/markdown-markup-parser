@@ -21,8 +21,8 @@ if (options.help) {
   var send = '\tHelp:\n';
   send += '\t--help, -h: Display this message\n';
   send += '\t--file, -f: Specify markdown file to read from (default: index.md in current directory)\n';
-  send += '\t--dest, -d: Specify where you want files to be made (default: current directory)';
-  send += '\t--tag, -t: Specify command tags (default: /!)';
+  send += '\t--dest, -d: Specify where you want files to be made (default: current directory)\n';
+  send += '\t--tag, -t: Specify command tags (default: /!)\n';
   send += '\t--init: make a new markdown file with starters\n';
   send += '\t--mdHelp: Get help for markdown parsing commands (coming soon)\n';
   console.log(send);
@@ -142,14 +142,14 @@ fs.readFile(file, 'utf8', function (err,data) {
       line = resultArray[p];
       var startTag = /<[^\/].+>/; // everything inside angle brakets not including a '/' (start tags)
       var endTag = /<\/.+>/; // everything inside angle brakets including '/' (end tags)
-      if (startTag.test(line)) { // If line has start tag
-        tabLength += 1;
-      }
-      if (endTag.test(line)){ // If line has end tag
+      if (endTag.test(line) && !startTag.test(line)){ // If line has end tag. Effects current line
         tabLength -= 1;
       }
       for (j = 0; j < tabLength; j++) { // Makes tabs based on tabLength number
         tab += '\t';
+      }
+      if (startTag.test(line) && !endTag.test(line)) { // If line has start tag. Effects next line
+        tabLength += 1;
       }
       result += tab + line + '\n'; // Makes it a part of result variable
     }
