@@ -17,7 +17,7 @@ All commands are started with `/!` in the format `/!<command>`. Don't include th
 - `end page <page>`: End page
 
 ### Command line flags
-- --help, -h: Display this message
+- --help, -h: Display help message
 - --file, -f: Specify markdown file to read from (default: index.md in current directory)
 - --dest, -d: Specify where you want files to be made (default: current directory)
 - --tag, -t: Specify command tags (default: /!)
