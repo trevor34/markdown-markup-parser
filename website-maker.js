@@ -1,8 +1,8 @@
 /* jshint esversion: 6 */
 /*
- * Markdown Website builder - v0.4.1
+ * Markdown Website builder - v0.5
  * Created by: Trevor W.
- * Github: https://github.com/trevor34/markdown-website-builder/ 
+ * Github: https://github.com/trevor34/markdown-website-builder/
 */
 
 const fs = require('fs'); // For reading a file
@@ -75,7 +75,7 @@ if (options.mdhelp) { // --mdhelp, -m
   console.log(send);
   process.exit();
 }
-
+var index = false;
 fs.readFile(file, 'utf8', function (err,data) { // Main program
   if (err) {
     return console.log(err);
@@ -134,6 +134,10 @@ fs.readFile(file, 'utf8', function (err,data) { // Main program
     } else {
       return console.log('Traceback: '+ (line + 1) + ': ' + tag + cmd + '\nParsing error\nNot a valid command'); // Error for if no command
     }
+  }
+  if (cmdArray < 1) { // If no parsing commands are in the file
+    blockArray.push({page: 'index', start: 0, end: dataArray.length - 1});
+    console.log('There are no parsing commands. Parsing into index.html');
   }
   var pageArray = [];
   // Puts everything that goes to a page into one string and makes a new array with the page name and that string

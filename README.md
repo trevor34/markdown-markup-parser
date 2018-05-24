@@ -1,4 +1,4 @@
-# markdown-website-builder v0.4.1
+# markdown-website-builder v0.5
 This is a website builder that uses NodeJS and [Markdown-it](https://github.com/markdown-it/markdown-it). It's main feature so far is that you can make multiple HTML pages in one Markdown file.
 
 
