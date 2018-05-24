@@ -1,12 +1,16 @@
 /* jshint esversion: 6 */
-
+/*
+ * Markdown Website builder - v0.4.1
+ * Created by: Trevor W.
+ * Github: https://github.com/trevor34/markdown-website-builder/ 
+*/
 
 const fs = require('fs'); // For reading a file
 const MarkdownIt = require('markdown-it'), // Turns Markdown into HTML
   md = new MarkdownIt();
 const commandLineArgs = require('command-line-args'); // Command line flags
 
-const optionDefinitions = [
+const optionDefinitions = [ // Command Line Flags
   { name: 'help', alias: 'h', type: Boolean },
   { name: 'file', alias: 'f', type: String },
   { name: 'dest', alias: 'd', type: String },
@@ -17,7 +21,7 @@ const optionDefinitions = [
 
 var i, p = 0;
 const options = commandLineArgs(optionDefinitions);
-if (options.help) {
+if (options.help) { // --help, -h
   var send = '\tHelp:\n';
   send += '\t--help, -h: Display this message\n';
   send += '\t--file, -f: Specify markdown file to read from (default: index.md in current directory)\n';
@@ -29,40 +33,42 @@ if (options.help) {
   process.exit();
 }
 
-if (typeof options.file == 'undefined') {
+if (typeof options.file == 'undefined') { // --file, -f
   var file = 'index.md';
 } else {
   var file = options.file;
 }
-if (typeof options.dest == 'undefined') {
+if (typeof options.dest == 'undefined') { // --dest, -d
   var dest = '';
 } else {
   var dest = options.dest;
 }
-if (typeof options.tag == 'undefined') {
+if (typeof options.tag == 'undefined') { // --tag, -t
   var tag = '/!';
 } else {
   var tag = options.tag;
 }
 
-if (options.init) {
+if (options.init) { // --init
   fs.stat(file, function (err, stats) {
+    // Finds File named after the file tag. If it exists, don't do anything and exit, else, make file
     if (err) {
       return console.log(err);
     }
     if (stats.isFile()) {
-      return console.log('index.md is already a file.');
+      console.log('index.md is already a file.');
+      process.exit();
     }
   });
   var starter = '/!start index\n\n/!end index';
-  fs.writeFile('index.md', starter, 'utf8', function (err) {
+  fs.writeFile(file, starter, 'utf8', function (err) {
     if (err) {
       return console.log(err);
     }
   });
   process.exit();
 }
-if (options.mdhelp) {
+if (options.mdhelp) { // --mdhelp, -m
   send = '\tAll commands are started with /! in the format /!<command>. Don\'t include the angle brackets when using commands\n';
   send += '\t  start page <page>: Start new page\n';
   send += '\t  end page <page>: End page';
@@ -70,13 +76,14 @@ if (options.mdhelp) {
   process.exit();
 }
 
-fs.readFile(file, 'utf8', function (err,data) {
+fs.readFile(file, 'utf8', function (err,data) { // Main program
   if (err) {
     return console.log(err);
   }
   var dataArray = data.split('\n'); // Split at each new line
   var cmdArray = [];
   for (i = 0; i < dataArray.length; i++) {
+    // Finds all parsing commands and puts them in an array
     var string = dataArray[i],
       starter = tag;
     if (string.includes(starter)) { // Searches for the command starter
@@ -89,6 +96,7 @@ fs.readFile(file, 'utf8', function (err,data) {
     start, end, line = 0,
     blockArray = [];
   for (i = 0; i < cmdArray.length; i++) {
+    // Does stuff based on commands
     var cmd = cmdArray[i].cmd;
     line = cmdArray[i].line;
     // /!start
@@ -134,10 +142,10 @@ fs.readFile(file, 'utf8', function (err,data) {
     for (p = blockArray[i].start; p <= blockArray[i].end; p++) { // From start of page to end of page
       text += dataArray[p] + '\n';
     }
-    pageArray.push({page: blockArray[i].page + '.html', data: text});
+    pageArray.push({page: dest + blockArray[i].page + '.html', data: text});
   }
 
-  for (i = 0; i < pageArray.length; i++) {
+  for (i = 0; i < pageArray.length; i++) { // Makes all of the pages
     page = pageArray[i];
     var resultArray = [];
     var tabLength = 0;
@@ -149,19 +157,19 @@ fs.readFile(file, 'utf8', function (err,data) {
       line = resultArray[p];
       var startTag = /<[^\/].+>/; // everything inside angle brakets not including a '/' (start tags)
       var endTag = /<\/.+>/; // everything inside angle brakets including '/' (end tags)
-      if (endTag.test(line) && !startTag.test(line)){ // If line has end tag. Effects current line
+      if (endTag.test(line) && !startTag.test(line)){ // If line has end tag and not start tag. Effects current line
         tabLength -= 1;
       }
       for (j = 0; j < tabLength; j++) { // Makes tabs based on tabLength number
         tab += '\t';
       }
-      if (startTag.test(line) && !endTag.test(line)) { // If line has start tag. Effects next line
+      if (startTag.test(line) && !endTag.test(line)) { // If line has start tag and not end tag. Effects next line
         tabLength += 1;
       }
       result += tab + line + '\n'; // Makes it a part of result variable
     }
-    // writes result to page
-    fs.writeFile(dest + page.page, result, 'utf8', function(err) {
+    // writes result to file
+    fs.writeFile(page.page, result, 'utf8', function(err) {
       if (err) {
         return console.log(err);
       }
