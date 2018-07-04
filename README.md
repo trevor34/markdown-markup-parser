@@ -26,4 +26,6 @@ All commands are started with `/!` in the format `/!<command>`. Don't include th
 
 An example of the syntax in use can be found at [examples/index.md](examples/index.md).
 
+I recommended checking out [the raw version](https://raw.githubusercontent.com/trevor34/markdown-website-builder/master/examples/index.md) as well due to some of the syntax not showing up
+
 Want to contribute? Check out the [Changelog file](CHANGELOG.md)
