@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-		Markdown Website builder - v0.5
+		Markdown Website builder - v0.6
 		Created by: Trevor W.
 
 		Github: https://github.com/trevor34/markdown-website-builder/
@@ -18,8 +18,11 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
 - Add commands for a CSS framework
-- Add support for the CSS 12 column layout, along with making divs
 - Add a command for information that goes into the head of an HTML document (name, stylesheet links, favicon, etc.)
+## [0.6] 2018-7-03
+## Added
+- HTML div tag support
+- Explanation in readme file
 ## [0.5] 2018-5-24
 ## Added
 - Option for if no parsing commands are in the md file

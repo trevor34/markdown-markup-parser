@@ -1,4 +1,4 @@
-# markdown-website-builder v0.5
+# markdown-website-builder v0.6
 This is a website builder that uses NodeJS and [Markdown-it](https://github.com/markdown-it/markdown-it). It's main feature so far is that you can make multiple HTML pages in one Markdown file.
 
 
@@ -12,9 +12,16 @@ This is a website builder that uses NodeJS and [Markdown-it](https://github.com/
 1. Once you have a page you want, simply run `node website-maker.js` and the program will parse the markdown file into a html file
 
 ### Syntax:
-All commands are started with `/!` in the format `/!<command>`. Don't include the angle brackets when using commands
+All commands are started with `/!` in the format `/!<command>`. Do not include the angle brackets when using commands
+#### Page syntax:
+These tags denote the start and end of HTML pages. They cannot be nested
 - `start page <page>`: Start new page
 - `end page <page>`: End page
+#### Div tag syntax:
+These tags denote the start and end of div tags. They can be nested and can also be named with periods (`.`) and pound signs (`#`) for classes and id's respectively.
+To name a div, just simply put a `.` or `#` in front of the name as `.class` or `#id`. As of right now, a div cannot have both an id and a class, or multiple classes and id's. If no period or pound sign is given, but the div is named, it defaults to a class. If the div is not named, it will be parsed as `<div>`. End div tags do not need to be named, but it may help with organization if you do.
+- `start div <optional: name>`: Starts div
+- `end div <optional: name>`: Ends div
 
 ### Command line flags
 - --help, -h: Display help message

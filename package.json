@@ -1,6 +1,6 @@
 {
   "name": "markdown-website-builder",
-  "version": "1.0.0",
+  "version": "0.6",
   "description": "Markdown website builder using NodeJs",
   "main": "website-maker.js",
   "repository": {

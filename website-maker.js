@@ -1,6 +1,6 @@
 /* jshint esversion: 6 */
 /*
- * Markdown Website builder - v0.5
+ * Markdown Website builder - v0.6
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-website-builder/
 */
@@ -75,30 +75,41 @@ if (options.mdhelp) { // --mdhelp, -m
   console.log(send);
   process.exit();
 }
+
 var index = false;
-fs.readFile(file, 'utf8', function (err,data) { // Main program
+fs.readFile(file, 'utf8', function (err, data) { // Main program
   if (err) {
     return console.log(err);
   }
   var dataArray = data.split('\n'); // Split at each new line
   var cmdArray = [];
+
   for (i = 0; i < dataArray.length; i++) {
     // Finds all parsing commands and puts them in an array
     var string = dataArray[i],
       starter = tag;
     if (string.includes(starter)) { // Searches for the command starter
-      string = string.substring(tag.length, string.length - 1); // Makes it only the command
+      string = string.substring(tag.length, string.length); // Makes it only the command
       command = string.split(' ');
       cmdArray.push({cmd: command, line: i});
     }
   }
-  var page = '',
+
+  var page = '', // Declaring variables
     start, end, line = 0,
     blockArray = [];
   for (i = 0; i < cmdArray.length; i++) {
     // Does stuff based on commands
     var cmd = cmdArray[i].cmd;
     line = cmdArray[i].line;
+    // /!(start/end) div
+    if (cmd[1] == 'div') {
+      command = '';
+      for (var e = 0; e < cmd.length; e++) {
+        command += cmd[e] + ' '; // makes command into a string
+      }
+      dataArray[line] = "\n/!" + command + '\n'; // Splits command away from other parts so it doesn't get parsed into another line
+    }
     // /!start
     if (cmd[0] == 'start') {
       if (cmd[1] == undefined) {
@@ -151,16 +162,45 @@ fs.readFile(file, 'utf8', function (err,data) { // Main program
 
   for (i = 0; i < pageArray.length; i++) { // Makes all of the pages
     page = pageArray[i];
-    var resultArray = [];
+    var resultArray, divArray = [];
     var tabLength = 0;
     var result = '';
     resultArray = md.render(page.data).split('\n'); // Renders Markdown into HTML and splits it
-    // Finds start and end tags and inserts tabs based on the number it is at
+
+
     for (p = 0; p < resultArray.length; p++) {
-      var tab = '';
       line = resultArray[p];
+      var starting = '<p>/!';
+      if (line.includes(starting)) { // Finds all of the post-parsing commands
+        aftCommand = line.substring(5, line.length - 4).split(' '); // Removes 'p' tags and splits it into commands
+
+        if (aftCommand[1] == 'div') {
+          // /!start div ___
+          if (aftCommand[0] == 'start') {
+
+            if (aftCommand[2] == undefined) {
+              line = '<div>';
+            }
+            // /!start div #id
+            else if (aftCommand[2].substring(0, 1) == '#') {
+              line = '<div id="' + aftCommand[2].substring(1) + '">';
+            }
+            // /!start div .class or /!start div class
+            else {
+              line = '<div class="' + aftCommand[2].substring(1) + '">';
+            }
+          }
+          else if (aftCommand[0] == 'end') {
+            line = '</div>';
+          }
+        }
+      }
+
+      // Finds start and end tags and inserts tabs based on the number it is at
+      var tab = '';
       var startTag = /<[^\/].+>/; // everything inside angle brakets not including a '/' (start tags)
       var endTag = /<\/.+>/; // everything inside angle brakets including '/' (end tags)
+
       if (endTag.test(line) && !startTag.test(line)){ // If line has end tag and not start tag. Effects current line
         tabLength -= 1;
       }
