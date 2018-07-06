@@ -1,6 +1,6 @@
 /* jshint esversion: 6 */
 /*
- * Markdown Website builder - v0.6
+ * Markdown Website builder - v0.6.1
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-website-builder/
 */
@@ -70,8 +70,13 @@ if (options.init) { // --init
 }
 if (options.mdhelp) { // --mdhelp, -m
   send = '\tAll commands are started with /! in the format /!<command>. Don\'t include the angle brackets when using commands\n';
-  send += '\t  start page <page>: Start new page\n';
-  send += '\t  end page <page>: End page';
+  send += 'Page Syntax:\n';
+  send += '\tstart page <page>: Start new page\n';
+  send += '\tend page <page>: End page\n';
+  send += 'Div tag syntax:\n';
+  send += '\tstart div <optional: name>: Starts div\n';
+  send += '\tend div <optional: name>: Ends div\n';
+  send += '\nFor more info, check out https://github.com/trevor34/markdown-website-builder/blob/master/README.md';
   console.log(send);
   process.exit();
 }
