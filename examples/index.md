@@ -1,11 +1,12 @@
 /!start page index
-/!start div .class
+/!head title:index link:styles.css link:framework.css viewport script:script.js
+/!start div .class.classTwo #id#idTwo
 /!start div
 ## wow Markdown
 # Amazing
 /!end div
 /!end div
-/!start div #id
+/!start div #id#idTwo .class.classTwo
 - You can put stuff in lists
 - [Link stuff](https://google.com)
 - **Embolden text**
@@ -14,5 +15,6 @@
 /!end div
 /!end page index
 /!start page page
+/!head wow amazing 2
 ## This is another page using markdown
 /!end page page

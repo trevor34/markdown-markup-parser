@@ -1,8 +1,8 @@
 {
-  "name": "markdown-website-builder",
-  "version": "0.6.1",
+  "name": "mdmp",
+  "version": "0.7",
   "description": "Markdown website builder using NodeJs",
-  "main": "website-maker.js",
+  "main": "mdmp.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/trevor34/markdown-website-builder.git"

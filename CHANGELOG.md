@@ -2,10 +2,10 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-		Markdown Website builder - v0.6.1
+		Markdown Markup Parser (MDMP) - v0.6.1
 		Created by: Trevor W.
 
-		Github: https://github.com/trevor34/markdown-website-builder/
+		Github: https://github.com/trevor34/markdown-markup-parser/
 
 ## Types of changes
     [Added] for new features.
@@ -17,8 +17,21 @@ All notable changes to this project will be documented in this file. The format 
 
 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
+- This program needs a better name. It's too much of a mouthful
 - Add commands for a CSS framework
-- Add a command for information that goes into the head of an HTML document (name, stylesheet links, favicon, etc.)
+## [0.7] 2018-7-07
+## Changed
+- Changed GitHub title to Markdown Markup Parser from Markdown Website Builder
+- Changed filename to mdmp.js from website-builder.js
+## Added
+- Full HTML page support
+- Multiple class and id tags
+- Head tag command including
+	- title
+	- link
+	- script
+	- viewport meta tag
+
 ## [0.6.1] 2018-7-05
 ## Added
 - Updated --mdhelp flag
