@@ -17,7 +17,6 @@ All notable changes to this project will be documented in this file. The format 
 
 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
-- This program needs a better name. It's too much of a mouthful
 - Add commands for a CSS framework
 ## [0.7] 2018-7-07
 ## Changed
