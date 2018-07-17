@@ -1,6 +1,8 @@
+#!/usr/bin/env node
+
 /* jshint esversion: 6 */
 /*
- * Markdown Markup Parser - v0.8.0
+ * Markdown Markup Parser - v0.8.1
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
 */
@@ -16,13 +18,15 @@ const optionDefinitions = [ // Command Line Flags
   { name: 'dest', alias: 'd', type: String },
   { name: 'tag', alias: 't', type: String },
   { name: 'init', type: Boolean },
-  { name: 'mdhelp', alias: 'm', type: Boolean }
+  { name: 'mdhelp', alias: 'm', type: Boolean },
+  { name: 'version', alias: 'v', type: Boolean }
 ];
 
 var i, p, e = 0;
 const options = commandLineArgs(optionDefinitions);
 
 // Command Line Flags
+// Help commands
 if (options.help) { // --help, -h
   var send = '\tHelp:\n';
   send += '\t--help, -h: Display this message\n';
@@ -31,29 +35,32 @@ if (options.help) { // --help, -h
   send += '\t--tag, -t: Specify command tags (default: /!)\n';
   send += '\t--init: make a new markdown file with starters\n';
   send += '\t--mdhelp, -m: Get help for markdown parsing commands\n';
+  send += '\t--version, -v: View version number\n';
   console.log(send);
   process.exit();
 }
 
-// --file, -f
-if (typeof options.file == 'undefined') {
-  var file = 'index.md';
-} else {
-  var file = options.file;
+// --mdhelp, -m
+if (options.mdhelp) {
+  send = '\tAll commands are started with /! in the format /!<command>. Don\'t include the angle brackets when using commands\n';
+  send += '  Page Syntax:\n';
+  send += '\tstart page <page>: Start new page\n';
+  send += '\tend page <page>: End page\n';
+  send += '  Div tag syntax:\n';
+  send += '\tstart div <optional: name>: Starts div\n';
+  send += '\tend div <optional: name>: Ends div\n';
+  send += '  Selectors:\n';
+  send += '\t/!selector <selectors> <text>';
+  send += '\nFor more info, check out https://github.com/trevor34/markdown-markup-parser/blob/master/syntax.md';
+  console.log(send);
+  process.exit();
 }
 
-// --dest, -d
-if (typeof options.dest == 'undefined') {
-  var dest = '';
-} else {
-  var dest = options.dest;
-}
-
-// --tag, -t
-if (typeof options.tag == 'undefined') {
-  var tag = '/!';
-} else {
-  var tag = options.tag;
+// --version, -v
+if (options.version) {
+  send = 'v0.8.1';
+  console.log(send);
+  process.exit();
 }
 
 // --init
@@ -77,22 +84,35 @@ if (options.init) {
   process.exit();
 }
 
-// --mdhelp, -m
-if (options.mdhelp) {
-  send = '\tAll commands are started with /! in the format /!<command>. Don\'t include the angle brackets when using commands\n';
-  send += '  Page Syntax:\n';
-  send += '\tstart page <page>: Start new page\n';
-  send += '\tend page <page>: End page\n';
-  send += '  Div tag syntax:\n';
-  send += '\tstart div <optional: name>: Starts div\n';
-  send += '\tend div <optional: name>: Ends div\n';
-  send += '\nFor more info, check out https://github.com/trevor34/markdown-website-builder#syntax';
-  console.log(send);
-  process.exit();
+// Program commands
+// --file, -f
+if (typeof options.file == 'undefined') {
+  var file = 'index.md';
+} else {
+  var file = options.file;
 }
 
+// --dest, -d
+if (typeof options.dest == 'undefined') {
+  var dest = '';
+} else {
+  var dest = options.dest;
+}
+
+// --tag, -t
+if (typeof options.tag == 'undefined') {
+  var tag = '/!';
+} else {
+  var tag = options.tag;
+}
+
+
+
+
+
+
 // Main program
-var index = false;
+var hasPage = false;
 fs.readFile(file, 'utf8', function (err, data) {
   if (err) {
     return console.log(err);
@@ -139,6 +159,7 @@ fs.readFile(file, 'utf8', function (err, data) {
         } else {
           page = cmd[2];
           start = line + 1; // Start 1 line after start command
+          hasPage = true;
         }
       }
     }
@@ -168,7 +189,7 @@ fs.readFile(file, 'utf8', function (err, data) {
       return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNot a valid command'); // Error for if no command
     }
   }
-  if (cmdArray < 1) { // If no parsing commands are in the file
+  if (hasPage) { // If no page commands are in the file
     blockArray.push({page: 'index', start: 0, end: dataArray.length - 1});
     console.log('There are no parsing commands. Parsing into index.html');
   }
@@ -198,7 +219,7 @@ fs.readFile(file, 'utf8', function (err, data) {
       var headTag = head[z];
       headTag = headTag.split(':');
       if (headTag[0] == 'title') {
-        title = headTag[1];
+        title = '\t\t<title>' + headTag[1] + '</title>\n';
       }
       if (headTag[0] == 'link') {
         link += '\t\t<link rel="stylesheet" href="'+ headTag[1] + '">\n';
@@ -215,8 +236,7 @@ fs.readFile(file, 'utf8', function (err, data) {
     top += '<html lang="en" dir="ltr">\n';
     top += '\t<head>\n';
     top += '\t\t<meta charset="utf-8">\n';
-    top += '\t\t<title>' + title + '</title>\n';
-    top += link + viewport;
+    top += title + link + viewport;
     top += '\t</head>\n';
     top += '\t<body>';
 

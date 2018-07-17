@@ -1,6 +1,6 @@
 {
   "name": "markdown-markup-parser",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Makes HTML documents using Markdown-it and custom syntax",
   "main": "mdmp.js",
   "private": "true",
@@ -30,5 +30,10 @@
   "bugs": {
     "url": "https://github.com/trevor34/markdown-markup-parser/issues"
   },
-  "homepage": "https://github.com/trevor34/markdown-markup-parser#readme"
+  "homepage": "https://github.com/trevor34/markdown-markup-parser#readme",
+
+  "preferGlobal": true,
+  "bin": {
+    "mdmp": "./mdmp.js"
+  }
 }
