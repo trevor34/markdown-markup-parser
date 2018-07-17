@@ -1,6 +1,6 @@
 /* jshint esversion: 6 */
 /*
- * Markdown Markup Parser - v0.7
+ * Markdown Markup Parser - v0.8.0
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
 */
@@ -118,6 +118,7 @@ fs.readFile(file, 'utf8', function (err, data) {
   for (i = 0; i < cmdArray.length; i++) {
     // Does stuff based on commands
     var cmd = cmdArray[i].cmd;
+    joinedCmd = cmd.join(' '); // For error messages
     line = cmdArray[i].line;
     // /!(start/end) div
     if (cmd[1] == 'div') {
@@ -125,15 +126,16 @@ fs.readFile(file, 'utf8', function (err, data) {
       command = cmd.join(' ');
       dataArray[line] = "\n/!" + command + '\n'; // Splits command away from other parts so it doesn't get parsed into another line
     }
+    else if (cmd[0] == 'selector' || cmd[1] == '/!selector' || cmd[0] == '/!selector') {} // Makes the else statement at the bottom not trigger for selectors
     // /!start
-    if (cmd[0] == 'start') {
+    else if (cmd[0] == 'start') {
       if (cmd[1] == undefined) {
-        return console.log('Traceback: '+ (line + 1) + ': ' + tag + cmd + '\nParsing error\nNo start specified'); // Error for if no page name
+        return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo start specified'); // Error for if no page name
       }
       // /!start page
       else if (cmd[1] == 'page') {
         if (cmd[2] == undefined) {
-          return console.log('Traceback: '+ (line + 1) + ': ' + tag + cmd + '\nParsing error\nNo page specified'); // Error for if no page name
+          return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo page specified'); // Error for if no page name
         } else {
           page = cmd[2];
           start = line + 1; // Start 1 line after start command
@@ -143,15 +145,15 @@ fs.readFile(file, 'utf8', function (err, data) {
     // /!end
     else if (cmd[0] == 'end'){
       if (cmd[1] == undefined) {
-        return console.log('Traceback: '+ (line + 1) + ': ' + tag + cmd + '\nParsing error\nNo end specified'); // Error for if no page name
+        return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo end specified'); // Error for if no page name
       }
       // /!end page
       else if (cmd[1] == 'page') {
         if (cmd[2] == undefined) {
-          return console.log('Traceback: '+ (line + 1) + ': ' + tag + cmd + '\nParsing error\nNo page specified'); // Error for if no page name
+          return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo page specified'); // Error for if no page name
         }
         else if (cmd[2] != page) {
-          return console.log('Traceback: '+ (line + 1) + ': ' + tag + cmd + '\nParsing error\n' + cmd[1] +  ' was never started or another page was started between them'); // Error for if page block wasn't started
+          return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\n' + cmd[1] +  ' was never started or another page was started between them'); // Error for if page block wasn't started
         } else {
           end = line - 1; // End 1 line before end command
           blockArray.push({page: page, start: start, end: end});
@@ -163,7 +165,7 @@ fs.readFile(file, 'utf8', function (err, data) {
       headArray.push(cmd); // Puts head info in it's own line
       dataArray[line] = ''; // Removes it from data
     } else {
-      return console.log('Traceback: '+ (line + 1) + ': ' + tag + cmd + '\nParsing error\nNot a valid command'); // Error for if no command
+      return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNot a valid command'); // Error for if no command
     }
   }
   if (cmdArray < 1) { // If no parsing commands are in the file
@@ -227,11 +229,20 @@ fs.readFile(file, 'utf8', function (err, data) {
 
     for (p = 0; p < resultArray.length - 1; p++) {
       line = resultArray[p];
-      var starting = '<p>/!',
-      pounds, periods = '';
-      if (line.includes(starting)) { // Finds all of the post-parsing commands
-        aftCommand = line.substring(5, line.length - 4).split(' '); // Removes 'p' tags and splits it into commands
+      var starting = /<.+>\/!/, // Looks for <[tag]>/!
+      pounds, periods, id = '';
+      if (starting.test(line)) { // Finds all of the post-parsing commands
+        var tagArray = starting.exec(line); // exec returns what was found in string
+        var StartingTag = tagArray[0]; // Gets what was found for <[tag]>/!
+        var StartingTagLen = StartingTag.length;
 
+        element = StartingTag.substring(1, StartingTagLen - 3); // Gets element name
+
+        backTag = (line.length - element.length - 3); // For removing the closing tag; </[tag]>
+
+        aftCommand = line.substring(StartingTagLen, backTag).split(' ');
+
+        var twoSelectors = false;
         // /!(start/end) div
         if (aftCommand[1] == 'div') {
           // /!start div
@@ -241,7 +252,6 @@ fs.readFile(file, 'utf8', function (err, data) {
               line = '<div>';
             }
             var div = '<div';
-            var id = '';
             // format: <div class="" id="">
             // If classes come before id's, or if there are classes and no id's
             if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') {
@@ -271,6 +281,40 @@ fs.readFile(file, 'utf8', function (err, data) {
             line = '</div>'; // Replaces line
           }
         }
+
+        // /!selector .class #id
+        else if (aftCommand[0] == 'selector'){
+          var HTMLtag = '<' + element;
+
+          if (aftCommand[1] && aftCommand[1].substring(0, 1) == '#') {
+            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') {
+              periods = aftCommand[2].substring(1).split('.').join(' ');
+              HTMLtag += ' class="' + periods + '"';
+              twoSelectors = true;
+            }
+            pounds = aftCommand[1].substring(1).split('#').join(' ');
+            HTMLtag += ' id="' + pounds + '">';
+          }
+          if (aftCommand[1] && aftCommand[1].substring(0, 1) == '.') {
+            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') {
+              pounds = aftCommand[2].substring(1).split('#').join(' ');
+              id = ' id="' + pounds + '"';
+              twoSelectors = true;
+            } else {
+              id = '';
+            }
+            pounds = aftCommand[1].substring(1).split('.').join(' ');
+            HTMLtag += ' class="' + pounds + '"' + id + '>';
+          }
+          var elementText = '';
+          if (twoSelectors) {
+            elementText = aftCommand.splice(3).join(' ');
+            line = HTMLtag + elementText + '</' + element + '>';
+          } else {
+            elementText = aftCommand.splice(2).join(' ');
+          }
+          line = HTMLtag + elementText + '</' + element + '>';
+        }
       }
 
       // Finds start and end tags and inserts tabs based on the number it is at
@@ -293,11 +337,13 @@ fs.readFile(file, 'utf8', function (err, data) {
       result += tab + line + '\n'; // Makes it a part of result variable
     }
     // writes result to file
+    /* jshint ignore:start */ // Removes jshint error with the function statement
     fs.writeFile(page.page, result, 'utf8', function(err) {
       if (err) {
         return console.log(err);
       }
     });
+    /* jshint ignore:end */
     console.log('Made ' + page.page);
   }
 });

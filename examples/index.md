@@ -1,20 +1,23 @@
 /!start page index
-/!head title:index link:styles.css link:framework.css viewport script:script.js
+/!head title:index.html link:styles.css link:framework.css viewport script:script.js
 /!start div .class.classTwo #id#idTwo
 /!start div
-## wow Markdown
-# Amazing
+## /!selector #id .class wow Markdown
+# /!selector .class #id Amazing
 /!end div
 /!end div
 /!start div #id#idTwo .class.classTwo
+/!selector .class.classTwo #id#idTwo You can do a lot with Markdown!
 - You can put stuff in lists
 - [Link stuff](https://google.com)
 - **Embolden text**
-- And everything else you can do with markdown!
+- And everything else you can do with Markdown!
 - Check out [GitHub's guide](https://guides.github.com/features/mastering-markdown/) for more!
+
+
 /!end div
 /!end page index
 /!start page page
-/!head wow amazing 2
+/!head title:page.html
 ## This is another page using markdown
 /!end page page

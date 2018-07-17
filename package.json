@@ -1,20 +1,34 @@
 {
-  "name": "mdmp",
-  "version": "0.7",
-  "description": "Markdown website builder using NodeJs",
+  "name": "markdown-markup-parser",
+  "version": "0.8.0",
+  "description": "Makes HTML documents using Markdown-it and custom syntax",
   "main": "mdmp.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/trevor34/markdown-website-builder.git"
+  "private": "true",
+  "directories": {
+    "example": "examples"
   },
-  "author": "Trevor W.",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/trevor34/markdown-website-builder/issues"
-  },
-  "homepage": "https://github.com/trevor34/markdown-website-builder",
   "dependencies": {
     "markdown-it": "^8.4.1",
     "command-line-args": "^5.0.2"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node mdmp.js -d examples/ -f examples/index.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trevor34/markdown-markup-parser.git"
+  },
+  "keywords": [
+    "markdown",
+    "website",
+    "html",
+    "parser"
+  ],
+  "author": "trevor34",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/trevor34/markdown-markup-parser/issues"
+  },
+  "homepage": "https://github.com/trevor34/markdown-markup-parser#readme"
 }
