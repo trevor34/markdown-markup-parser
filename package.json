@@ -1,6 +1,6 @@
 {
   "name": "markdown-markup-parser",
-  "version": "0.8.2",
+  "version": "1.0.0",
   "description": "Makes HTML documents using Markdown-it and custom syntax",
   "main": "mdmp.js",
   "private": "true",

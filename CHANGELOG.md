@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-		Markdown Markup Parser (MDMP) - v0.8.2
+		Markdown Markup Parser (MDMP) - v1.0.0
 		Created by: Trevor W.
 
 		Github: https://github.com/trevor34/markdown-markup-parser/
@@ -17,11 +17,15 @@ All notable changes to this project will be documented in this file. The format 
 
 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
-- Add HTML tag support besides what is parseable with markdown-it
+- Add selectors for inline elements
 
+## [1.0.0] 2018-8-02
+NPM release!
+## Added
+- Multi-line tags and single-line tags
 ## [0.8.2] 2018-7-21
 ## Changed
-- Changed help and mdhelp arguments
+- Changed help and mdhelp commands
 ## Added
 - Added more comments
 ## [0.8.1] 2018-7-17
