@@ -2,7 +2,7 @@
 
 /* jshint esversion: 6 */
 /*
- * Markdown Markup Parser - v0.8.1
+ * Markdown Markup Parser - v0.8.2
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
 */
@@ -28,38 +28,40 @@ const options = commandLineArgs(optionDefinitions);
 // Command Line Flags
 // Help commands
 if (options.help) { // --help, -h
-  var send = '\tHelp:\n';
-  send += '\t--help, -h: Display this message\n';
-  send += '\t--file, -f: Specify markdown file to read from (default: index.md in current directory)\n';
-  send += '\t--dest, -d: Specify where you want files to be made (default: current directory)\n';
-  send += '\t--tag, -t: Specify command tags (default: /!)\n';
-  send += '\t--init: make a new markdown file with starters\n';
-  send += '\t--mdhelp, -m: Get help for markdown parsing commands\n';
-  send += '\t--version, -v: View version number\n';
-  console.log(send);
+  console.log(`
+  Help:
+    --help, -h: Display this message
+    --file, -f: Specify markdown file to read from (default: index.md in current directory)
+    --dest, -d: Specify where you want files to be made (default: current directory)
+    --tag, -t: Specify command tags (default: /!)
+    --init: make a new markdown file with starters
+    --mdhelp, -m: Get help for markdown parsing commands
+    --version, -v: View version number
+  `);
   process.exit();
 }
 
 // --mdhelp, -m
 if (options.mdhelp) {
-  send = '\tAll commands are started with /! in the format /!<command>. Don\'t include the angle brackets when using commands\n';
-  send += '  Page Syntax:\n';
-  send += '\tstart page <page>: Start new page\n';
-  send += '\tend page <page>: End page\n';
-  send += '  Div tag syntax:\n';
-  send += '\tstart div <optional: name>: Starts div\n';
-  send += '\tend div <optional: name>: Ends div\n';
-  send += '  Selectors:\n';
-  send += '\t/!selector <selectors> <text>';
-  send += '\nFor more info, check out https://github.com/trevor34/markdown-markup-parser/blob/master/syntax.md';
-  console.log(send);
+  console.log(`
+  All commands are started with /! in the format /!<command>. Don't include the angle brackets when using commands
+  Page Syntax:
+    start page <page>: Start new page
+    end page <page>: End page
+  Div tag syntax:
+    start div <optional: name>: Starts div
+    end div <optional: name>: Ends div
+  Selectors:
+    /!selector <selectors> <text>
+
+For more info, check out https://github.com/trevor34/markdown-markup-parser/blob/master/syntax.md
+  `);
   process.exit();
 }
 
 // --version, -v
 if (options.version) {
-  send = 'v0.8.1';
-  console.log(send);
+  console.log('v0.8.2');
   process.exit();
 }
 
@@ -105,10 +107,6 @@ if (typeof options.tag == 'undefined') {
 } else {
   var tag = options.tag;
 }
-
-
-
-
 
 
 // Main program
@@ -273,9 +271,9 @@ fs.readFile(file, 'utf8', function (err, data) {
             }
             var div = '<div';
             // format: <div class="" id="">
-            // If classes come before id's, or if there are classes and no id's
+            // If ID's come before classes or if there are id's but no classes
             if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') {
-              if (aftCommand[3]) {
+              if (aftCommand[3]) { // If there are classes
                 periods = aftCommand[3].substring(1).split('.').join(' ');
                 div += ' class="' + periods + '"';
               }
@@ -283,8 +281,9 @@ fs.readFile(file, 'utf8', function (err, data) {
               div += ' id="' + pounds + '">';
               line = div;
             }
+            // If classes come before id's, or if there are classes and no id's
             if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') {
-              if (aftCommand[3]) {
+              if (aftCommand[3]) { // If there are ID's
                 pounds = aftCommand[3].substring(1).split('#').join(' ');
                 id = ' id="' + pounds + '"';
               } else {
@@ -305,9 +304,9 @@ fs.readFile(file, 'utf8', function (err, data) {
         // /!selector .class #id
         else if (aftCommand[0] == 'selector'){
           var HTMLtag = '<' + element;
-
+          // If ID's come before classes or if there are no classes
           if (aftCommand[1] && aftCommand[1].substring(0, 1) == '#') {
-            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') {
+            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') { // If there are classes
               periods = aftCommand[2].substring(1).split('.').join(' ');
               HTMLtag += ' class="' + periods + '"';
               twoSelectors = true;
@@ -315,8 +314,9 @@ fs.readFile(file, 'utf8', function (err, data) {
             pounds = aftCommand[1].substring(1).split('#').join(' ');
             HTMLtag += ' id="' + pounds + '">';
           }
+          // If classes come before ID's or if there are no ID's
           if (aftCommand[1] && aftCommand[1].substring(0, 1) == '.') {
-            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') {
+            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') { // If there are ID's
               pounds = aftCommand[2].substring(1).split('#').join(' ');
               id = ' id="' + pounds + '"';
               twoSelectors = true;

@@ -7,13 +7,14 @@
 /!end div
 /!end div
 /!start div #id#idTwo .class.classTwo
+
 /!selector .class.classTwo #id#idTwo You can do a lot with Markdown!
+
 - You can put stuff in lists
 - [Link stuff](https://google.com)
 - **Embolden text**
 - And everything else you can do with Markdown!
 - Check out [GitHub's guide](https://guides.github.com/features/mastering-markdown/) for more!
-
 
 /!end div
 /!end page index
