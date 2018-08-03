@@ -42,5 +42,5 @@ Example:
 
 They can also have classes and id's, like selectors
 
-- `/!selector #id .class <text>`
+- `/!<tag> #id .class <text>`
 - `/!<tag> #id .class <text>`

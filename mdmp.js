@@ -2,7 +2,7 @@
 
 /* jshint esversion: 6 */
 /*
- * Markdown Markup Parser - v1.0.0
+ * Markdown Markup Parser - v1.0.1
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
 */
@@ -27,12 +27,6 @@ const options = commandLineArgs(optionDefinitions);
 
 // Command Line Flags
 // Help commands
-// --version, -v
-if (options.version) {
-  console.log('v1.0.0');
-  process.exit();
-}
-
 if (options.help) { // --help, -h
   console.log(`
   Help:
@@ -54,16 +48,20 @@ if (options.mdhelp) {
   Page Syntax:
     start page <page>: Start new page
     end page <page>: End page
-  Multi-line tag syntax:
-    start <tag> <optional: selectors>: Starts div
-    end <tag> <optional: selectors>: Ends div
+  Div tag syntax:
+    start div <optional: name>: Starts div
+    end div <optional: name>: Ends div
   Selectors:
     /!selector <selectors> <text>
-  Single-line tag syntax:
-    /!<tag> <optional: selectors> <text>
 
 For more info, check out https://github.com/trevor34/markdown-markup-parser/blob/master/syntax.md
   `);
+  process.exit();
+}
+
+// --version, -v
+if (options.version) {
+  console.log('v1.0.1');
   process.exit();
 }
 
@@ -125,8 +123,7 @@ fs.readFile(file, 'utf8', function (err, data) {
     var string = dataArray[i],
       starter = tag;
     if (string.includes(starter)) { // Searches for the command starter
-      string = string.replace(tag, ''); // Makes it only the command
-
+      string = string.substring(tag.length, string.length); // Makes it only the command
       command = string.split(' ');
       cmdArray.push({cmd: command, line: i});
     }
@@ -141,17 +138,13 @@ fs.readFile(file, 'utf8', function (err, data) {
     var cmd = cmdArray[i].cmd;
     joinedCmd = cmd.join(' '); // For error messages
     line = cmdArray[i].line;
-    // /!(start/end)
-    if (cmd[1] != 'page' && cmd[0] != 'head') {
-      if (joinedCmd.includes('selector')) {
-        q = cmd.indexOf('selector');
-        cmd[q] = '/!selector';
-      } else {
-        cmd[0] = '/!' + cmd[0];
-      }
-      joinedCmd = cmd.join(' ');
-      dataArray[line] = "\n" + joinedCmd + '\n'; // Splits command away from other parts so it doesn't get parsed into another line
+    // /!(start/end) div
+    if (cmd[1] == 'div') {
+      command = '';
+      command = cmd.join(' ');
+      dataArray[line] = "\n/!" + command + '\n'; // Splits command away from other parts so it doesn't get parsed into another line
     }
+    else if (cmd[0] == 'selector' || cmd[1] == '/!selector' || cmd[0] == '/!selector') {} // Makes the else statement at the bottom not trigger for selectors
     // /!start
     else if (cmd[0] == 'start') {
       if (cmd[1] == undefined) {
@@ -191,12 +184,10 @@ fs.readFile(file, 'utf8', function (err, data) {
       headArray.push(cmd); // Puts head info in it's own line
       dataArray[line] = ''; // Removes it from data
     } else {
-      if (!joinedCmd.includes('selector')) {
-        return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNot a valid command'); // Error for if no command
-      }
+      return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNot a valid command'); // Error for if no command
     }
   }
-  if (!hasPage) { // If no page commands are in the file
+  if (hasPage) { // If no page commands are in the file
     blockArray.push({page: 'index', start: 0, end: dataArray.length - 1});
     console.log('There are no parsing commands. Parsing into index.html');
   }
@@ -209,6 +200,7 @@ fs.readFile(file, 'utf8', function (err, data) {
     }
     pageArray.push({page: dest + blockArray[i].page + '.html', data: text});
   }
+
   for (i = 0; i < pageArray.length; i++) { // Makes all of the pages
     page = pageArray[i];
     var head = headArray[i];
@@ -269,49 +261,49 @@ fs.readFile(file, 'utf8', function (err, data) {
         aftCommand = line.substring(StartingTagLen, backTag).split(' ');
 
         var twoSelectors = false;
-        /* Multi-line tags */
-        // /!start
-        if (aftCommand[0] == 'start') {
+        // /!(start/end) div
+        if (aftCommand[1] == 'div') {
+          // /!start div
+          if (aftCommand[0] == 'start') {
 
-          var topTag = '<' + aftCommand[1];
-          // format: <[tag] class="" id="">
-          // If ID's come before classes or if there are id's but no classes
-          if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') {
-            if (aftCommand[3]) { // If there are classes
-              periods = aftCommand[3].substring(1).split('.').join(' ');
-              topTag += ' class="' + periods + '"';
+            if (aftCommand[2] == undefined) {
+              line = '<div>';
             }
-            pounds = aftCommand[2].substring(1).split('#').join(' ');
-            topTag += ' id="' + pounds + '"';
-          }
-          // If classes come before id's, or if there are classes and no id's
-          if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') {
-            if (aftCommand[3]) { // If there are ID's
-              pounds = aftCommand[3].substring(1).split('#').join(' ');
-              id = ' id="' + pounds + '"';
-            } else {
-              id = '';
+            var div = '<div';
+            // format: <div class="" id="">
+            // If ID's come before classes or if there are id's but no classes
+            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') {
+              if (aftCommand[3]) { // If there are classes
+                periods = aftCommand[3].substring(1).split('.').join(' ');
+                div += ' class="' + periods + '"';
+              }
+              pounds = aftCommand[2].substring(1).split('#').join(' ');
+              div += ' id="' + pounds + '">';
+              line = div;
             }
-            pounds = aftCommand[2].substring(1).split('.').join(' ');
-            topTag += ' class="' + pounds + '"' + id;
+            // If classes come before id's, or if there are classes and no id's
+            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') {
+              if (aftCommand[3]) { // If there are ID's
+                pounds = aftCommand[3].substring(1).split('#').join(' ');
+                id = ' id="' + pounds + '"';
+              } else {
+                id = '';
+              }
+              pounds = aftCommand[2].substring(1).split('.').join(' ');
+              div += ' class="' + pounds + '"' + id + '>';
+              line = div;
+            }
           }
 
-          topTag += '>';
-          line = topTag;
+          // /!end div
+          else if (aftCommand[0] == 'end') {
+            line = '</div>'; // Replaces line
+          }
         }
 
-        // /!end
-        else if (aftCommand[0] == 'end') {
-          line = '</' + aftCommand[1] + '>'; // Replaces line
-        }
-
-        /* Single Line tags and selectors*/
-        else {
-          if (aftCommand[0] != 'selector') { // For custom single line tags
-            element = aftCommand[0];
-          }
+        // /!selector .class #id
+        else if (aftCommand[0] == 'selector'){
           var HTMLtag = '<' + element;
-
           // If ID's come before classes or if there are no classes
           if (aftCommand[1] && aftCommand[1].substring(0, 1) == '#') {
             if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') { // If there are classes
@@ -320,10 +312,10 @@ fs.readFile(file, 'utf8', function (err, data) {
               twoSelectors = true;
             }
             pounds = aftCommand[1].substring(1).split('#').join(' ');
-            HTMLtag += ' id="' + pounds + '"';
+            HTMLtag += ' id="' + pounds + '">';
           }
           // If classes come before ID's or if there are no ID's
-          else if (aftCommand[1] && aftCommand[1].substring(0, 1) == '.') {
+          if (aftCommand[1] && aftCommand[1].substring(0, 1) == '.') {
             if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') { // If there are ID's
               pounds = aftCommand[2].substring(1).split('#').join(' ');
               id = ' id="' + pounds + '"';
@@ -332,11 +324,8 @@ fs.readFile(file, 'utf8', function (err, data) {
               id = '';
             }
             pounds = aftCommand[1].substring(1).split('.').join(' ');
-            HTMLtag += ' class="' + pounds + '"' + id;
-          } else { // If no classes or id's are present
-            aftCommand.splice(0, 0, ''); // Puts a space on the first item so it doesn't get deleted
+            HTMLtag += ' class="' + pounds + '"' + id + '>';
           }
-          HTMLtag += '>';
           var elementText = '';
           if (twoSelectors) {
             elementText = aftCommand.splice(3).join(' ');
@@ -368,7 +357,7 @@ fs.readFile(file, 'utf8', function (err, data) {
       result += tab + line + '\n'; // Makes it a part of result variable
     }
     // writes result to file
-    /* jshint ignore:start */ // Removes jshint error with this function
+    /* jshint ignore:start */ // Removes jshint error with the function statement
     fs.writeFile(page.page, result, 'utf8', function(err) {
       if (err) {
         return console.log(err);

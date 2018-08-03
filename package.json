@@ -1,9 +1,8 @@
 {
   "name": "markdown-markup-parser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Makes HTML documents using Markdown-it and custom syntax",
   "main": "mdmp.js",
-  "private": "true",
   "directories": {
     "example": "examples"
   },
@@ -23,7 +22,8 @@
     "markdown",
     "website",
     "html",
-    "parser"
+    "parser",
+    "markdown-it"
   ],
   "author": "trevor34",
   "license": "GPL-3.0",
