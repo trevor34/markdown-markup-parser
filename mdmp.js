@@ -2,7 +2,7 @@
 
 /* jshint esversion: 6 */
 /*
- * Markdown Markup Parser - v1.0.1
+ * Markdown Markup Parser - v1.0.2
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
 */
@@ -27,6 +27,13 @@ const options = commandLineArgs(optionDefinitions);
 
 // Command Line Flags
 // Help commands
+
+// --version, -v
+if (options.version) {
+  console.log('v1.0.2');
+  process.exit();
+}
+
 if (options.help) { // --help, -h
   console.log(`
   Help:
@@ -56,12 +63,6 @@ if (options.mdhelp) {
 
 For more info, check out https://github.com/trevor34/markdown-markup-parser/blob/master/syntax.md
   `);
-  process.exit();
-}
-
-// --version, -v
-if (options.version) {
-  console.log('v1.0.1');
   process.exit();
 }
 

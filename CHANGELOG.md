@@ -17,9 +17,11 @@ All notable changes to this project will be documented in this file. The format 
 
 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
-- Add selectors for inline elements
+- Add selectors for inline elements, such as anchors and images
 
-
+## [1.0.2] 2018-8-02
+## Changed
+- Updated readme file
 ## [1.0.1] 2018-8-02
 ## Added
 - Contributing file

@@ -1,5 +1,11 @@
 # MarkDown Markup Parser (MDMP) v1.0.1
-This is a markdown parser that uses NodeJS and [Markdown-it](https://github.com/markdown-it/markdown-it). It's main feature is that you can make multiple HTML pages in one Markdown file.
+If any of you have looked into making websites, you may have heard of SASS or programs like it that aim to simplify CSS. MDMP aims to do the same, but instead of CSS, it aims to simplify HTML using Markdown, built off of an existing package named Markdown-it. But what makes it different to any other Markdown parser? Some features are:
+- The ability to add multiple pages of HTML into a single Markdown file
+- Support for HTML tags that are not covered by Markdown
+- The ability to add classes and ID's to almost anything
+- A simplified way to add head information into an HTML document
+- Proper indentation of HTML files
+- Link outside scripts or stylesheets, including ones from CDNs
 
 
 ## How to use:
@@ -14,7 +20,7 @@ This is a markdown parser that uses NodeJS and [Markdown-it](https://github.com/
 
 #### From Git or GitHub:
 1. Run `npm i` in directory to install modules
-  - Optional: Run `npm install -g /path/to/directory` to use this module globally. If this is done, follow the steps in 'From NPM'
+  \*\* Optional: Run `npm install -g /path/to/directory` to use this module globally. If this is done, follow the steps in 'From NPM'
 1. Once NPM is finished installing packages, run `node mdmp.js --init` to make `index.md` with starting syntax
 1. Start using markdown!
 1. Once you have a page you want, simply run `node mdmp.js` and the program will parse the markdown file into a html file
