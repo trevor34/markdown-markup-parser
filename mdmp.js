@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 
-/* jshint esversion: 6 */
 /*
- * Markdown Markup Parser - v1.0.2
+ * Markdown Markup Parser - v1.0.3
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
-*/
+ */
 
 const fs = require('fs'); // For reading a file
-const MarkdownIt = require('markdown-it'), // Turns Markdown into HTML
-  md = new MarkdownIt();
+const MarkdownIt = require('markdown-it'); // Turns Markdown into HTML
+const md = new MarkdownIt();
 const commandLineArgs = require('command-line-args'); // Command line flags
 
 const optionDefinitions = [ // Command Line Flags
@@ -22,15 +21,18 @@ const optionDefinitions = [ // Command Line Flags
   { name: 'version', alias: 'v', type: Boolean }
 ];
 
-var i, p, e = 0;
+var i, p = 0;
+var file = '';
 const options = commandLineArgs(optionDefinitions);
 
-// Command Line Flags
-// Help commands
+/*
+ * Command Line Flags
+ * Help commands
+ */
 
 // --version, -v
 if (options.version) {
-  console.log('v1.0.2');
+  console.log('v1.0.3');
   process.exit();
 }
 
@@ -88,27 +90,29 @@ if (options.init) {
 }
 
 // Program commands
+
 // --file, -f
 if (typeof options.file == 'undefined') {
-  var file = 'index.md';
+  file = 'index.md';
 } else {
-  var file = options.file;
+  file = options.file;
 }
 
 // --dest, -d
+var dest = '';
 if (typeof options.dest == 'undefined') {
-  var dest = '';
+  dest = '';
 } else {
-  var dest = options.dest;
+  dest = options.dest;
 }
 
 // --tag, -t
+var tag = '';
 if (typeof options.tag == 'undefined') {
-  var tag = '/!';
+  tag = '/!';
 } else {
-  var tag = options.tag;
+  tag = options.tag;
 }
-
 
 // Main program
 var hasPage = false;
@@ -125,7 +129,7 @@ fs.readFile(file, 'utf8', function (err, data) {
       starter = tag;
     if (string.includes(starter)) { // Searches for the command starter
       string = string.substring(tag.length, string.length); // Makes it only the command
-      command = string.split(' ');
+      var command = string.split(' ');
       cmdArray.push({cmd: command, line: i});
     }
   }
@@ -137,15 +141,22 @@ fs.readFile(file, 'utf8', function (err, data) {
   for (i = 0; i < cmdArray.length; i++) {
     // Does stuff based on commands
     var cmd = cmdArray[i].cmd;
-    joinedCmd = cmd.join(' '); // For error messages
+    var joinedCmd = cmd.join(' '); // For error messages
     line = cmdArray[i].line;
-    // /!(start/end) div
-    if (cmd[1] == 'div') {
-      command = '';
-      command = cmd.join(' ');
-      dataArray[line] = "\n/!" + command + '\n'; // Splits command away from other parts so it doesn't get parsed into another line
+    // /!(start/end)
+    if (cmd[1] != 'page' && cmd[0] != 'head') {
+      if (joinedCmd.includes('selector')) {
+        var q = cmd.indexOf('selector');
+        cmd[q] = '/!selector';
+      } else {
+        cmd[0] = '/!' + cmd[0];
+      }
+      joinedCmd = cmd.join(' ');
+      dataArray[line] = "\n" + joinedCmd + '\n'; // Splits command away from other parts so it doesn't get parsed into another line
     }
-    else if (cmd[0] == 'selector' || cmd[1] == '/!selector' || cmd[0] == '/!selector') {} // Makes the else statement at the bottom not trigger for selectors
+    else if (cmd[0] == 'selector' || cmd[1] == '/!selector' || cmd[0] == '/!selector') {
+      // Makes the else statement at the bottom not trigger for selectors
+    }
     // /!start
     else if (cmd[0] == 'start') {
       if (cmd[1] == undefined) {
@@ -155,15 +166,14 @@ fs.readFile(file, 'utf8', function (err, data) {
       else if (cmd[1] == 'page') {
         if (cmd[2] == undefined) {
           return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo page specified'); // Error for if no page name
-        } else {
-          page = cmd[2];
-          start = line + 1; // Start 1 line after start command
-          hasPage = true;
         }
+        page = cmd[2];
+        start = line + 1; // Start 1 line after start command
+        hasPage = true;
       }
     }
     // /!end
-    else if (cmd[0] == 'end'){
+    else if (cmd[0] == 'end') {
       if (cmd[1] == undefined) {
         return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo end specified'); // Error for if no page name
       }
@@ -173,22 +183,22 @@ fs.readFile(file, 'utf8', function (err, data) {
           return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo page specified'); // Error for if no page name
         }
         else if (cmd[2] != page) {
-          return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\n' + cmd[1] +  ' was never started or another page was started between them'); // Error for if page block wasn't started
-        } else {
-          end = line - 1; // End 1 line before end command
-          blockArray.push({page: page, start: start, end: end});
+          return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\n' + cmd[1] + ' was never started or another page was started between them'); // Error for if page block wasn't started
         }
+          end = line - 1; // End 1 line before end command
+          blockArray.push({page, start, end});
+
       }
     }
     // /!head
     else if (cmd[0] == 'head') {
       headArray.push(cmd); // Puts head info in it's own line
       dataArray[line] = ''; // Removes it from data
-    } else {
+    } else if (!joinedCmd.includes('selector')) {
       return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNot a valid command'); // Error for if no command
     }
   }
-  if (hasPage) { // If no page commands are in the file
+  if (!hasPage) { // If no page commands are in the file
     blockArray.push({page: 'index', start: 0, end: dataArray.length - 1});
     console.log('There are no parsing commands. Parsing into index.html');
   }
@@ -201,11 +211,10 @@ fs.readFile(file, 'utf8', function (err, data) {
     }
     pageArray.push({page: dest + blockArray[i].page + '.html', data: text});
   }
-
   for (i = 0; i < pageArray.length; i++) { // Makes all of the pages
     page = pageArray[i];
     var head = headArray[i];
-    var resultArray, divArray = [];
+    var resultArray = [];
     var tabLength = 2;
     var result = '';
     resultArray = md.render(page.data).split('\n'); // Renders Markdown into HTML and splits it
@@ -248,85 +257,100 @@ fs.readFile(file, 'utf8', function (err, data) {
 
     for (p = 0; p < resultArray.length - 1; p++) {
       line = resultArray[p];
-      var starting = /<.+>\/!/, // Looks for <[tag]>/!
+      var starting = /<.+>\/!/u, // Looks for <[tag]>/!
       pounds, periods, id = '';
       if (starting.test(line)) { // Finds all of the post-parsing commands
         var tagArray = starting.exec(line); // exec returns what was found in string
         var StartingTag = tagArray[0]; // Gets what was found for <[tag]>/!
         var StartingTagLen = StartingTag.length;
 
-        element = StartingTag.substring(1, StartingTagLen - 3); // Gets element name
+        var element = StartingTag.substring(1, StartingTagLen - 3); // Gets element name
 
-        backTag = (line.length - element.length - 3); // For removing the closing tag; </[tag]>
+        var backTag = line.length - element.length - 3; // For removing the closing tag; </[tag]>
 
-        aftCommand = line.substring(StartingTagLen, backTag).split(' ');
+        var aftCommand = line.substring(StartingTagLen, backTag).split(' ');
 
         var twoSelectors = false;
-        // /!(start/end) div
-        if (aftCommand[1] == 'div') {
-          // /!start div
-          if (aftCommand[0] == 'start') {
 
-            if (aftCommand[2] == undefined) {
-              line = '<div>';
+        /* Multi-line tags */
+        // /!start
+        if (aftCommand[0] == 'start') {
+
+          var topTag = '<' + aftCommand[1];
+
+          /*
+           * format: <[tag] class="" id="">
+           * If ID's come before classes or if there are id's but no classes
+           */
+          if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') {
+            if (aftCommand[3]) { // If there are classes
+              periods = aftCommand[3].substring(1).split('.');
+              periods = periods.join(' ');
+              topTag += ' class="' + periods + '"';
             }
-            var div = '<div';
-            // format: <div class="" id="">
-            // If ID's come before classes or if there are id's but no classes
-            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') {
-              if (aftCommand[3]) { // If there are classes
-                periods = aftCommand[3].substring(1).split('.').join(' ');
-                div += ' class="' + periods + '"';
-              }
-              pounds = aftCommand[2].substring(1).split('#').join(' ');
-              div += ' id="' + pounds + '">';
-              line = div;
+            pounds = aftCommand[2].substring(1).split('#');
+            pounds = pounds.join(' ');
+            topTag += ' id="' + pounds + '"';
+          }
+          // If classes come before id's, or if there are classes and no id's
+          if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') {
+            if (aftCommand[3]) { // If there are ID's
+              pounds = aftCommand[3].substring(1).split('#');
+              pounds = pounds.join(' ');
+              id = ' id="' + pounds + '"';
+            } else {
+              id = '';
             }
-            // If classes come before id's, or if there are classes and no id's
-            if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') {
-              if (aftCommand[3]) { // If there are ID's
-                pounds = aftCommand[3].substring(1).split('#').join(' ');
-                id = ' id="' + pounds + '"';
-              } else {
-                id = '';
-              }
-              pounds = aftCommand[2].substring(1).split('.').join(' ');
-              div += ' class="' + pounds + '"' + id + '>';
-              line = div;
-            }
+            periods = aftCommand[2].substring(1).split('.');
+            periods = periods.join(' ');
+            topTag += ' class="' + periods + '"' + id;
           }
 
-          // /!end div
-          else if (aftCommand[0] == 'end') {
-            line = '</div>'; // Replaces line
-          }
+          topTag += '>';
+          line = topTag;
         }
 
-        // /!selector .class #id
-        else if (aftCommand[0] == 'selector'){
+        // /!end
+        else if (aftCommand[0] == 'end') {
+          line = '</' + aftCommand[1] + '>'; // Replaces line
+        }
+
+        /* Single Line tags and selectors*/
+        else {
+          if (aftCommand[0] != 'selector') { // For custom single line tags
+            element = aftCommand[0];
+          }
           var HTMLtag = '<' + element;
+
           // If ID's come before classes or if there are no classes
           if (aftCommand[1] && aftCommand[1].substring(0, 1) == '#') {
             if (aftCommand[2] && aftCommand[2].substring(0, 1) == '.') { // If there are classes
-              periods = aftCommand[2].substring(1).split('.').join(' ');
+              periods = aftCommand[2].substring(1).split('.');
+              periods = periods.join(' ');
               HTMLtag += ' class="' + periods + '"';
               twoSelectors = true;
             }
-            pounds = aftCommand[1].substring(1).split('#').join(' ');
-            HTMLtag += ' id="' + pounds + '">';
+            pounds = aftCommand[1].substring(1).split('#');
+            pounds = pounds.join(' ');
+            HTMLtag += ' id="' + pounds + '"';
           }
           // If classes come before ID's or if there are no ID's
-          if (aftCommand[1] && aftCommand[1].substring(0, 1) == '.') {
+          else if (aftCommand[1] && aftCommand[1].substring(0, 1) == '.') {
             if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') { // If there are ID's
-              pounds = aftCommand[2].substring(1).split('#').join(' ');
+              pounds = aftCommand[2].substring(1).split('#');
+              pounds = pounds.join(' ');
               id = ' id="' + pounds + '"';
               twoSelectors = true;
             } else {
               id = '';
             }
-            pounds = aftCommand[1].substring(1).split('.').join(' ');
-            HTMLtag += ' class="' + pounds + '"' + id + '>';
+            periods = aftCommand[1].substring(1).split('.');
+            periods = periods.join(' ');
+            HTMLtag += ' class="' + periods + '"' + id;
+          } else { // If no classes or id's are present
+            aftCommand.splice(0, 0, ''); // Puts a space on the first item so it doesn't get deleted
           }
+          HTMLtag += '>';
           var elementText = '';
           if (twoSelectors) {
             elementText = aftCommand.splice(3).join(' ');
@@ -340,19 +364,19 @@ fs.readFile(file, 'utf8', function (err, data) {
 
       // Finds start and end tags and inserts tabs based on the number it is at
       var tab = '';
-      var startTag = /<[^\/].+>/; // everything inside angle brakets not including a '/' (start tags)
-      var endTag = /<\/.+>/; // everything inside angle brakets including '/' (end tags)
+      var startTag = /<[^/].+>/u; // everything inside angle brakets not including a '/' (start tags)
+      var endTag = /<\/.+>/u; // everything inside angle brakets including '/' (end tags)
 
-      if (endTag.test(line) && !startTag.test(line)){ // If line has end tag and not start tag. Effects current line
+      if (endTag.test(line) && !startTag.test(line)) { // If line has end tag and not start tag. Effects current line
         tabLength -= 1;
       }
-      for (j = 0; j < tabLength; j++) { // Makes tabs based on tabLength number
+      for (var j = 0; j < tabLength; j++) { // Makes tabs based on tabLength number
         tab += '\t';
       }
       if (startTag.test(line) && !endTag.test(line)) { // If line has start tag and not end tag. Effects next line
         tabLength += 1;
       }
-      if (p == 0 || p == (resultArray.length - 2)) { // If it is the first line (head info) or the last (HTML and body end tags)
+      if (p == 0 || p == resultArray.length - 2) { // If it is the first line (head info) or the last (HTML and body end tags)
         tab = '';
       }
       result += tab + line + '\n'; // Makes it a part of result variable

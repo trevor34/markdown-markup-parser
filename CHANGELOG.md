@@ -18,7 +18,13 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
 - Add selectors for inline elements, such as anchors and images
+- Remove selector tag in single line elements (`/!selector`)
 
+##[1.0.3] 2018-8-21
+## Changed
+- Changed linter. Now using eslint.
+## Fixed
+- Completely fixed accidental rollback that happened in 1.0.0
 ## [1.0.2] 2018-8-02
 ## Changed
 - Updated readme file
