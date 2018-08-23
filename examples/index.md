@@ -2,12 +2,12 @@
 /!head title:index.html link:styles.css link:framework.css viewport script:script.js
 /!start div .class.classTwo #id#idTwo
 /!start div
-## /!selector #id .class wow Markdown
-# /!selector .class #id Amazing
+## #id .class wow Markdown
+# .class #id Amazing
 /!end div
 /!end div
 /!start div #id#idTwo .class.classTwo
-/!selector .class.classTwo #id#idTwo You can do a lot with Markdown!
+.class.classTwo #id#idTwo You can do a lot with Markdown!
 /!start nav
 /!end nav
 

@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-		Markdown Markup Parser (MDMP) - v1.0.1
+		Markdown Markup Parser (MDMP) - v1.1.0
 		Created by: Trevor W.
 
 		Github: https://github.com/trevor34/markdown-markup-parser/
@@ -17,10 +17,19 @@ All notable changes to this project will be documented in this file. The format 
 
 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
-- Add selectors for inline elements, such as anchors and images
-- Remove selector tag in single line elements (`/!selector`)
+- The ability to add selectors to anchors and images
 
-##[1.0.3] 2018-8-21
+## [1.1.0] 2018-8-23
+## Added
+- new Regex detection for Start tags (`/!`)
+- selector tag-less class and ID calling
+## Changed
+- Regex handling for after-MarkdownIt parsing
+## Deprecated
+- Selector tags (`/!selector`). Replaced with the ability to use no selector tag to call classes and ID's. Read [syntax.md](syntax.md) for more info.
+## Fixed
+- Selector mishandling that changed all tags into `p` tags
+## [1.0.3] 2018-8-21
 ## Changed
 - Changed linter. Now using eslint.
 ## Fixed

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
- * Markdown Markup Parser - v1.0.3
+ * Markdown Markup Parser - v1.1.0
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
  */
@@ -21,8 +21,6 @@ const optionDefinitions = [ // Command Line Flags
   { name: 'version', alias: 'v', type: Boolean }
 ];
 
-var i, p = 0;
-var file = '';
 const options = commandLineArgs(optionDefinitions);
 
 /*
@@ -32,7 +30,7 @@ const options = commandLineArgs(optionDefinitions);
 
 // --version, -v
 if (options.version) {
-  console.log('v1.0.3');
+  console.log('v1.1.0');
   process.exit();
 }
 
@@ -54,14 +52,22 @@ if (options.help) { // --help, -h
 if (options.mdhelp) {
   console.log(`
   All commands are started with /! in the format /!<command>. Don't include the angle brackets when using commands
-  Page Syntax:
+  Page syntax:
     start page <page>: Start new page
     end page <page>: End page
-  Div tag syntax:
-    start div <optional: name>: Starts div
-    end div <optional: name>: Ends div
-  Selectors:
-    /!selector <selectors> <text>
+  Multi line tag syntax:
+    start <tag> <optional: selectors>: Starts element
+    end <tag> <optional: selectiors>: Ends elemen
+
+  Single line tag syntax:
+    <tag> <optional: selectors> <text>
+    Tags can also be markdown's default syntax, without /!
+
+  Selector format examples:
+    .class.class2 #id#id2
+    #id#id2 .class.class2
+    #id
+    .class
 
 For more info, check out https://github.com/trevor34/markdown-markup-parser/blob/master/syntax.md
   `);
@@ -69,32 +75,26 @@ For more info, check out https://github.com/trevor34/markdown-markup-parser/blob
 }
 
 // --init
+var file = 'index.md';
 if (options.init) {
-  fs.stat(file, function (err, stats) {
-    // Finds File named after the file tag. If it exists, don't do anything and exit, else, make file
-    if (err) {
-      return console.log(err);
-    }
-    if (stats.isFile()) {
-      console.log('index.md is already a file.');
-      process.exit();
-    }
-  });
-  var starter = '/!start index\n\n/!end index';
-  fs.writeFile(file, starter, 'utf8', function (err) {
+  var starter = `/!start index
+/!head title:index.html
+
+/!end index`;
+  fs.writeFileSync(file, starter, 'utf8', function (err) {
     if (err) {
       return console.log(err);
     }
   });
+  console.log('\n\tindex.md made with starting syntax\n');
+
   process.exit();
 }
 
 // Program commands
 
 // --file, -f
-if (typeof options.file == 'undefined') {
-  file = 'index.md';
-} else {
+if (typeof options.file != 'undefined') {
   file = options.file;
 }
 
@@ -123,18 +123,20 @@ fs.readFile(file, 'utf8', function (err, data) {
   var dataArray = data.split('\n'); // Split at each new line
   var cmdArray = [];
 
-  for (i = 0; i < dataArray.length; i++) {
+  for (var i = 0; i < dataArray.length; i++) {
     // Finds all parsing commands and puts them in an array
-    var string = dataArray[i],
-      starter = tag;
-    if (string.includes(starter)) { // Searches for the command starter
-      string = string.substring(tag.length, string.length); // Makes it only the command
+    var string = dataArray[i];
+    var regTag = new RegExp('.*' + tag, "u");
+    if (regTag.test(string)) { // Searches for the command starter
+      var regArray = regTag.exec(string);
+      string = regArray.input.substring(regArray[0].length, regArray.input.length); // Makes it only the command
       var command = string.split(' ');
       cmdArray.push({cmd: command, line: i});
     }
   }
 
-  var page = '', // Declaring variables
+
+  var pageName = '', // Declaring variables
     start, end, line = 0,
     blockArray = [],
     headArray = [];
@@ -145,17 +147,7 @@ fs.readFile(file, 'utf8', function (err, data) {
     line = cmdArray[i].line;
     // /!(start/end)
     if (cmd[1] != 'page' && cmd[0] != 'head') {
-      if (joinedCmd.includes('selector')) {
-        var q = cmd.indexOf('selector');
-        cmd[q] = '/!selector';
-      } else {
-        cmd[0] = '/!' + cmd[0];
-      }
-      joinedCmd = cmd.join(' ');
-      dataArray[line] = "\n" + joinedCmd + '\n'; // Splits command away from other parts so it doesn't get parsed into another line
-    }
-    else if (cmd[0] == 'selector' || cmd[1] == '/!selector' || cmd[0] == '/!selector') {
-      // Makes the else statement at the bottom not trigger for selectors
+      dataArray[line] = "\n" + dataArray[line] + '\n'; // Splits command away from other parts so it doesn't get parsed into another line
     }
     // /!start
     else if (cmd[0] == 'start') {
@@ -167,7 +159,7 @@ fs.readFile(file, 'utf8', function (err, data) {
         if (cmd[2] == undefined) {
           return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo page specified'); // Error for if no page name
         }
-        page = cmd[2];
+        pageName = cmd[2];
         start = line + 1; // Start 1 line after start command
         hasPage = true;
       }
@@ -182,11 +174,11 @@ fs.readFile(file, 'utf8', function (err, data) {
         if (cmd[2] == undefined) {
           return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo page specified'); // Error for if no page name
         }
-        else if (cmd[2] != page) {
+        else if (cmd[2] != pageName) {
           return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\n' + cmd[1] + ' was never started or another page was started between them'); // Error for if page block wasn't started
         }
           end = line - 1; // End 1 line before end command
-          blockArray.push({page, start, end});
+          blockArray.push({page: pageName, start, end});
 
       }
     }
@@ -206,13 +198,13 @@ fs.readFile(file, 'utf8', function (err, data) {
   // Puts everything that goes to a page into one string and makes a new array with the page name and that string
   for (i = 0; i < blockArray.length; i++) {
     var text = '';
-    for (p = blockArray[i].start; p <= blockArray[i].end; p++) { // From start of page to end of page
+    for (var p = blockArray[i].start; p <= blockArray[i].end; p++) { // From start of page to end of page
       text += dataArray[p] + '\n';
     }
     pageArray.push({page: dest + blockArray[i].page + '.html', data: text});
   }
   for (i = 0; i < pageArray.length; i++) { // Makes all of the pages
-    page = pageArray[i];
+    var page = pageArray[i];
     var head = headArray[i];
     var resultArray = [];
     var tabLength = 2;
@@ -257,14 +249,18 @@ fs.readFile(file, 'utf8', function (err, data) {
 
     for (p = 0; p < resultArray.length - 1; p++) {
       line = resultArray[p];
-      var starting = /<.+>\/!/u, // Looks for <[tag]>/!
+      var starting = /<(.+)>(\/!|\.|#)/u, // Looks for <[tag]>/! or . or #
       pounds, periods, id = '';
       if (starting.test(line)) { // Finds all of the post-parsing commands
         var tagArray = starting.exec(line); // exec returns what was found in string
+        var element = tagArray[1];
         var StartingTag = tagArray[0]; // Gets what was found for <[tag]>/!
-        var StartingTagLen = StartingTag.length;
-
-        var element = StartingTag.substring(1, StartingTagLen - 3); // Gets element name
+        var StartingTagLen = '';
+        if (tagArray[2] == '.' || tagArray[2] == '#') {
+          StartingTagLen = StartingTag.length - 1;
+        } else {
+          StartingTagLen = StartingTag.length;
+        }
 
         var backTag = line.length - element.length - 3; // For removing the closing tag; </[tag]>
 
@@ -278,10 +274,9 @@ fs.readFile(file, 'utf8', function (err, data) {
 
           var topTag = '<' + aftCommand[1];
 
-          /*
-           * format: <[tag] class="" id="">
-           * If ID's come before classes or if there are id's but no classes
-           */
+          // format: <[tag] class="" id="">
+
+          // If ID's come before classes or if there are id's but no classes
           if (aftCommand[2] && aftCommand[2].substring(0, 1) == '#') {
             if (aftCommand[3]) { // If there are classes
               periods = aftCommand[3].substring(1).split('.');
@@ -315,11 +310,14 @@ fs.readFile(file, 'utf8', function (err, data) {
           line = '</' + aftCommand[1] + '>'; // Replaces line
         }
 
-        /* Single Line tags and selectors*/
+        /* Single Line tags and selectors */
         else {
-          if (aftCommand[0] != 'selector') { // For custom single line tags
+          if (aftCommand[0].substring(0, 1) == '.' || aftCommand[0].substring(0, 1) == '#') {
+            aftCommand.splice(0, 0, 'placeholder'); // Keeps first line from being ignored
+          } else if (aftCommand[0] != 'selector') { // For custom single line tags
             element = aftCommand[0];
           }
+
           var HTMLtag = '<' + element;
 
           // If ID's come before classes or if there are no classes
@@ -362,6 +360,7 @@ fs.readFile(file, 'utf8', function (err, data) {
         }
       }
 
+      /* Tab instertion - Gives HTML document a regular and readable look */
       // Finds start and end tags and inserts tabs based on the number it is at
       var tab = '';
       var startTag = /<[^/].+>/u; // everything inside angle brakets not including a '/' (start tags)
@@ -382,13 +381,11 @@ fs.readFile(file, 'utf8', function (err, data) {
       result += tab + line + '\n'; // Makes it a part of result variable
     }
     // writes result to file
-    /* jshint ignore:start */ // Removes jshint error with the function statement
     fs.writeFile(page.page, result, 'utf8', function(err) {
       if (err) {
         return console.log(err);
       }
     });
-    /* jshint ignore:end */
     console.log('Made ' + page.page);
   }
 });
