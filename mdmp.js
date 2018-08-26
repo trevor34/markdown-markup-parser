@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
- * Markdown Markup Parser - v1.1.0
+ * Markdown Markup Parser - v1.1.1
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
  */
@@ -30,7 +30,7 @@ const options = commandLineArgs(optionDefinitions);
 
 // --version, -v
 if (options.version) {
-  console.log('v1.1.0');
+  console.log('v1.1.1');
   process.exit();
 }
 
@@ -217,18 +217,19 @@ fs.readFile(file, 'utf8', function (err, data) {
     var link = '';
     for (var z = 0; z < head.length; z++) {
       var headTag = head[z];
-      headTag = headTag.split(':');
-      if (headTag[0] == 'title') {
-        title = '\t\t<title>' + headTag[1] + '</title>\n';
+      var reghead = /((.+):\b(.+)|.+[^:])/u; // Looks for [text]:[text] or [text] without :. Fixes problem that arises when a CDN is used in a link or script tag
+      var HTarray = reghead.exec(headTag);
+      if (HTarray[2] == 'title') {
+        title = '\t\t<title>' + HTarray[3] + '</title>\n';
       }
-      if (headTag[0] == 'link') {
-        link += '\t\t<link rel="stylesheet" href="'+ headTag[1] + '">\n';
+      if (HTarray[2] == 'link') {
+        link += '\t\t<link rel="stylesheet" href="'+ HTarray[3] + '">\n';
       }
-      if (headTag[0] == 'viewport') {
+      if (HTarray[1] == 'viewport') {
         viewport = '\t\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n';
       }
-      if (headTag[0] == 'script') {
-        script += '\t\t<script src="' + headTag[1] + '" charset="utf-8"></script>\n';
+      if (HTarray[2] == 'script') {
+        script += '\t\t<script src="' + HTarray[3] + '" charset="utf-8"></script>\n';
       }
     }
 
