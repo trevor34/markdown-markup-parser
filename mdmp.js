@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
- * Markdown Markup Parser - v1.1.1
+ * Markdown Markup Parser - v1.1.2
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
  */
@@ -30,7 +30,7 @@ const options = commandLineArgs(optionDefinitions);
 
 // --version, -v
 if (options.version) {
-  console.log('v1.1.1');
+  console.log('v1.1.2');
   process.exit();
 }
 
@@ -150,12 +150,12 @@ fs.readFile(file, 'utf8', function (err, data) {
       dataArray[line] = "\n" + dataArray[line] + '\n'; // Splits command away from other parts so it doesn't get parsed into another line
     }
     // /!start
-    else if (cmd[0] == 'start') {
-      if (cmd[1] == undefined) {
-        return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo start specified'); // Error for if no page name
-      }
-      // /!start page
-      else if (cmd[1] == 'page') {
+    else if (cmd[1] == 'page') {
+      if (cmd[0] == 'start') {
+        if (cmd[1] == undefined) {
+          return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo start specified'); // Error for if no page name
+        }
+        // /!start page
         if (cmd[2] == undefined) {
           return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo page specified'); // Error for if no page name
         }
@@ -163,23 +163,15 @@ fs.readFile(file, 'utf8', function (err, data) {
         start = line + 1; // Start 1 line after start command
         hasPage = true;
       }
-    }
-    // /!end
-    else if (cmd[0] == 'end') {
-      if (cmd[1] == undefined) {
-        return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo end specified'); // Error for if no page name
-      }
-      // /!end page
-      else if (cmd[1] == 'page') {
+      else if (cmd[0] == 'end') {
         if (cmd[2] == undefined) {
           return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNo page specified'); // Error for if no page name
         }
         else if (cmd[2] != pageName) {
           return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\n' + cmd[1] + ' was never started or another page was started between them'); // Error for if page block wasn't started
         }
-          end = line - 1; // End 1 line before end command
-          blockArray.push({page: pageName, start, end});
-
+        end = line - 1; // End 1 line before end command
+        blockArray.push({page: pageName, start, end});
       }
     }
     // /!head

@@ -1,4 +1,4 @@
-# MarkDown Markup Parser (MDMP) v1.1.1
+# MarkDown Markup Parser (MDMP) v1.1.2
 If any of you have looked into making websites, you may have heard of SASS or programs like it that aim to simplify CSS. MDMP aims to do the same, but instead of CSS, it aims to simplify HTML using Markdown, built off of an existing package named Markdown-it. But what makes it different to any other Markdown parser? Some features are:
 - The ability to add multiple pages of HTML into a single Markdown file
 - Support for HTML tags that are not covered by Markdown
