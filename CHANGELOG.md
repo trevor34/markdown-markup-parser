@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-		Markdown Markup Parser (MDMP) - v1.1.2
+		Markdown Markup Parser (MDMP) - v1.2.0
 		Created by: Trevor W.
 
 		Github: https://github.com/trevor34/markdown-markup-parser/
@@ -19,6 +19,11 @@ All notable changes to this project will be documented in this file. The format 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
 - The ability to add selectors to anchors and images
 
+## [1.2.0] 2018-10-29
+## Added
+- Added escape characters. Use `\` to escape a parsing command. Does not currently work on selectors.
+## Fixed
+- Fixed improper RegExp in post-markdownIt parsing commands
 ## [1.1.2] 2018-9-10
 ## Changed
 - Changed page tag detection. It now uses one if statement to test whether a page tag is used, and then tests if it says to start or end it. 

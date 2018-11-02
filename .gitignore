@@ -6,8 +6,7 @@ npm-debug.log
 *.env
 *.dev
 .DS_Store
-command.txt
-old-syntax.md
+.vscode
 
 # Docker
 Dockerfile

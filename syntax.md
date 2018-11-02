@@ -40,3 +40,9 @@ This tag denotes HTML tags that go in the head of the document. It is set up as 
 - `link:<stylesheet>`: Links external stylesheets. Can be local files or files from a CDN, such as Bootstrap.
 - `viewport`: Sets a viewport meta tag for the HTML document. More info can be learned [here](https://www.w3schools.com/css/css_rwd_viewport.asp)
 - `script:<JavaScript document>`: Links external JavaScript documents. Can be local files or files from a CDN, such as jQuery. If this tag is called, it is put at the bottom of the HTML document.
+
+#### Escape character
+The escape character can be used on any parsing command. The escape character is `\`. An escape character is not needed if it is not in the first column. Examples:
+- `\/!span This is an escaped span tag`
+- `\/!page start nothing`
+- `You do not need an escape character for this /!span`

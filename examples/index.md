@@ -6,10 +6,12 @@
 # .class #id Amazing
 /!end div
 /!end div
+\/!start page wow
 /!start div #id#idTwo .class.classTwo
 .class.classTwo #id#idTwo You can do a lot with Markdown!
 /!start nav
 /!end nav
+
 
 - You can put stuff in lists
 - [Link stuff](https://google.com)
@@ -18,6 +20,9 @@
 - Check out [GitHub's guide](https://guides.github.com/features/mastering-markdown/) for more!
 
 /!span This is a span tag
+
+\/!span But you can also use escape characters
+
 /!end div
 /!end page index
 /!start page page

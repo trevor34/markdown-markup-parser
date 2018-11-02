@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
- * Markdown Markup Parser - v1.1.2
+ * Markdown Markup Parser - v1.2.0
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
  */
@@ -30,7 +30,7 @@ const options = commandLineArgs(optionDefinitions);
 
 // --version, -v
 if (options.version) {
-  console.log('v1.1.2');
+  console.log('v1.2.0');
   process.exit();
 }
 
@@ -114,7 +114,11 @@ if (typeof options.tag == 'undefined') {
   tag = options.tag;
 }
 
-// Main program
+/* Main program */
+function esc(string) { // Removes ' ' from encodeURI function
+  return string.replace(/[.*+?^${}()|[\]\\]/ug, '\\$&'); // $& means the whole matched string eslint-disable-line no-useless-escape
+}
+
 var hasPage = false;
 fs.readFile(file, 'utf8', function (err, data) {
   if (err) {
@@ -122,16 +126,26 @@ fs.readFile(file, 'utf8', function (err, data) {
   }
   var dataArray = data.split('\n'); // Split at each new line
   var cmdArray = [];
+  var escapeArray = [];
 
   for (var i = 0; i < dataArray.length; i++) {
     // Finds all parsing commands and puts them in an array
+    var command = '';
     var string = dataArray[i];
-    var regTag = new RegExp('.*' + tag, "u");
-    if (regTag.test(string)) { // Searches for the command starter
-      var regArray = regTag.exec(string);
+    var regTag = new RegExp('((\\\\)?' + tag + ')', "ug"); // Looks for escape tag (\/!) or tag (/!). No clue why I need 4 \ characters.
+    var regArray = regTag.exec(string);
+    if (regArray) {
       string = regArray.input.substring(regArray[0].length, regArray.input.length); // Makes it only the command
-      var command = string.split(' ');
-      cmdArray.push({cmd: command, line: i});
+      command = string.split(' ');
+      switch (regArray[1]) {
+        case tag:
+          cmdArray.push({ cmd: command, line: i });
+          break;
+
+        case '\\' + tag:
+          escapeArray.push({ cmd: command, line: i });
+          break;
+      }
     }
   }
 
@@ -141,7 +155,7 @@ fs.readFile(file, 'utf8', function (err, data) {
     blockArray = [],
     headArray = [];
   for (i = 0; i < cmdArray.length; i++) {
-    // Does stuff based on commands
+    // Parses through commands in cmdArray
     var cmd = cmdArray[i].cmd;
     var joinedCmd = cmd.join(' '); // For error messages
     line = cmdArray[i].line;
@@ -182,10 +196,12 @@ fs.readFile(file, 'utf8', function (err, data) {
       return console.log('Traceback: '+ (line + 1) + ': ' + tag + joinedCmd + '\nParsing error\nNot a valid command'); // Error for if no command
     }
   }
+
   if (!hasPage) { // If no page commands are in the file
     blockArray.push({page: 'index', start: 0, end: dataArray.length - 1});
     console.log('There are no parsing commands. Parsing into index.html');
   }
+
   var pageArray = [];
   // Puts everything that goes to a page into one string and makes a new array with the page name and that string
   for (i = 0; i < blockArray.length; i++) {
@@ -201,8 +217,13 @@ fs.readFile(file, 'utf8', function (err, data) {
     var resultArray = [];
     var tabLength = 2;
     var result = '';
-    resultArray = md.render(page.data).split('\n'); // Renders Markdown into HTML and splits it
+    var pageData = esc(page.data);
+    result = md.render(pageData); // Renders Markdown into HTML and splits it
+    resultArray = decodeURI(result).split('\n');
+    result = '';
 
+
+    /* Head tag parsing */
     var title = '';
     var viewport = '';
     var script = '';
@@ -240,15 +261,17 @@ fs.readFile(file, 'utf8', function (err, data) {
     resultArray.splice(0, 0, top);
     resultArray.splice(-1, 0, bottom);
 
+    /* Selector and Tag parsing */
     for (p = 0; p < resultArray.length - 1; p++) {
       line = resultArray[p];
-      var starting = /<(.+)>(\/!|\.|#)/u, // Looks for <[tag]>/! or . or #
-      pounds, periods, id = '';
+      // Looks for <[HTMLtag]>tag or . or #
+      var starting = new RegExp("<(.+)>(" + tag + "|\\.|#|\\\\)", "u"); // eslint-disable-line no-useless-escape
+      var pounds, periods, id = '';
       if (starting.test(line)) { // Finds all of the post-parsing commands
         var tagArray = starting.exec(line); // exec returns what was found in string
         var element = tagArray[1];
         var StartingTag = tagArray[0]; // Gets what was found for <[tag]>/!
-        var StartingTagLen = '';
+        var StartingTagLen = 0;
         if (tagArray[2] == '.' || tagArray[2] == '#') {
           StartingTagLen = StartingTag.length - 1;
         } else {
@@ -260,6 +283,13 @@ fs.readFile(file, 'utf8', function (err, data) {
         var aftCommand = line.substring(StartingTagLen, backTag).split(' ');
 
         var twoSelectors = false;
+
+        if (tagArray[2] == "\\") {
+          aftCommand = aftCommand.join(' ').replace(/\\/u, "");
+          aftCommand = aftCommand.split(' ');
+          var escaped = true;
+
+        }
 
         /* Multi-line tags */
         // /!start
@@ -305,8 +335,9 @@ fs.readFile(file, 'utf8', function (err, data) {
 
         /* Single Line tags and selectors */
         else {
-          if (aftCommand[0].substring(0, 1) == '.' || aftCommand[0].substring(0, 1) == '#') {
+          if (aftCommand[0].substring(0, 1) == '.' || aftCommand[0].substring(0, 1) == '#' || escaped) {
             aftCommand.splice(0, 0, 'placeholder'); // Keeps first line from being ignored
+            escaped = false;
           } else if (aftCommand[0] != 'selector') { // For custom single line tags
             element = aftCommand[0];
           }
