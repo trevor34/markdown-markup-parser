@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
- * Markdown Markup Parser - v1.2.0
+ * Markdown Markup Parser - v1.2.1
  * Created by: Trevor W.
  * Github: https://github.com/trevor34/markdown-markup-parser/
  */
@@ -30,7 +30,7 @@ const options = commandLineArgs(optionDefinitions);
 
 // --version, -v
 if (options.version) {
-  console.log('v1.2.0');
+  console.log('v1.2.1');
   process.exit();
 }
 
@@ -116,7 +116,7 @@ if (typeof options.tag == 'undefined') {
 
 /* Main program */
 function esc(string) { // Removes ' ' from encodeURI function
-  return string.replace(/[.*+?^${}()|[\]\\]/ug, '\\$&'); // $& means the whole matched string eslint-disable-line no-useless-escape
+  return string.replace(/\\(?![#.])/ug, '\\$&'); // $& means the whole matched string eslint-disable-line no-useless-escape
 }
 
 var hasPage = false;
@@ -217,6 +217,7 @@ fs.readFile(file, 'utf8', function (err, data) {
     var resultArray = [];
     var tabLength = 2;
     var result = '';
+
     var pageData = esc(page.data);
     result = md.render(pageData); // Renders Markdown into HTML and splits it
     resultArray = decodeURI(result).split('\n');
@@ -265,7 +266,7 @@ fs.readFile(file, 'utf8', function (err, data) {
     for (p = 0; p < resultArray.length - 1; p++) {
       line = resultArray[p];
       // Looks for <[HTMLtag]>tag or . or #
-      var starting = new RegExp("<(.+)>(" + tag + "|\\.|#|\\\\)", "u"); // eslint-disable-line no-useless-escape
+      var starting = new RegExp("<(.+)>(" + tag + "|[\.#](?![ ])|\\\\)", "u"); // eslint-disable-line no-useless-escape
       var pounds, periods, id = '';
       if (starting.test(line)) { // Finds all of the post-parsing commands
         var tagArray = starting.exec(line); // exec returns what was found in string

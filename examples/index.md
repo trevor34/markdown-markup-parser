@@ -6,7 +6,6 @@
 # .class #id Amazing
 /!end div
 /!end div
-\/!start page wow
 /!start div #id#idTwo .class.classTwo
 .class.classTwo #id#idTwo You can do a lot with Markdown!
 /!start nav
@@ -22,6 +21,8 @@
 /!span This is a span tag
 
 \/!span But you can also use escape characters
+
+\# You can also do it with Markdown tags
 
 /!end div
 /!end page index

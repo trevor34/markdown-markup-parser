@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-		Markdown Markup Parser (MDMP) - v1.2.0
+		Markdown Markup Parser (MDMP) - v1.2.1
 		Created by: Trevor W.
 
 		Github: https://github.com/trevor34/markdown-markup-parser/
@@ -18,7 +18,9 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased] - Upcoming Changes, Current Projects, and 'wish list' items
 - The ability to add selectors to anchors and images
-
+## [1.2.1] 2018-11-03
+## Fixed
+- Fixed Markdown escape characters not working
 ## [1.2.0] 2018-10-29
 ## Added
 - Added escape characters. Use `\` to escape a parsing command. Does not currently work on selectors.
